@@ -1,35 +1,47 @@
 #!/usr/bin/env python3
 """
 CONSOLIDATED TRAINING: Semantic Grounding Cycle 1
-Single script, minimal dependencies, 400 samples, 1 epoch
+Windows-compatible version with simplified configuration
 """
 
-# Disable torch.compile globally (problematic on Windows)
 import os
+import sys
+
 os.environ["TORCH_COMPILE_DISABLE"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+import time
+import warnings
+from pathlib import Path
 
 import torch
-import time
-from pathlib import Path
-from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from datasets import load_from_disk
-from peft import LoraConfig, get_peft_model
-from trl import SFTTrainer
+from peft import LoraConfig, TaskType, get_peft_model
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    DataCollatorForLanguageModeling,
+    Trainer,
+    TrainingArguments,
+)
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # ============================================================================
-# CONFIGURATION (centralized, easy to modify)
+# CONFIGURATION
 # ============================================================================
 CONFIG = {
     "num_train_samples": 100,
     "num_eval_samples": 25,
     "train_batch_size": 1,
     "eval_batch_size": 1,
-    "max_seq_length": 256,
+    "gradient_accumulation_steps": 4,
+    "max_seq_length": 512,
     "learning_rate": 2e-4,
-    "warmup_steps": 1,
-    "logging_steps": 2,
-    "save_steps": 50,
-    "eval_steps": 50,
+    "warmup_steps": 5,
+    "logging_steps": 5,
+    "save_steps": 25,
+    "eval_steps": 25,
     "num_epochs": 1,
     "model_name": "microsoft/phi-2",
     "output_dir": "models/grounding_cycle_1",
@@ -37,205 +49,308 @@ CONFIG = {
     "lora_alpha": 16,
 }
 
-# Try to enable optimized kernels for CUDA
-FLASH_ATTN_AVAILABLE = False
-try:
-    from flash_attn import flash_attn_func
-    FLASH_ATTN_AVAILABLE = True
-    print("[OK] Flash Attention 2 available for CUDA optimization")
-except ImportError:
-    print("[!] Flash Attention not available, using efficient attention fallback")
-
-print("="*70)
-print("SEMANTIC GROUNDING CYCLE 1: CONSOLIDATED TRAINING")
-print("="*70)
+print("=" * 70)
+print("SEMANTIC GROUNDING CYCLE 1: WINDOWS-COMPATIBLE TRAINING")
+print("=" * 70)
 
 start_time = time.time()
-train_duration = 0  # Initialize in case of early exit
-training_success = False  # Initialize at top (not in conditional)
+training_success = False
 
 # ============================================================================
-# 1. LOAD MINIMAL DATASET
+# 1. LOAD DATASET
 # ============================================================================
-print("\n[1/5] Loading 400 samples...")
+print("\n[1/6] Loading dataset...")
 try:
     ds = load_from_disk("data/datasets/instruction_dataset")
-    train_ds = ds['train'].select(list(range(min(CONFIG["num_train_samples"], len(ds['train'])))))
-    test_ds = ds['test'].select(list(range(min(CONFIG["num_eval_samples"], len(ds['test'])))))
+    train_ds = ds["train"].select(
+        list(range(min(CONFIG["num_train_samples"], len(ds["train"]))))
+    )
+    test_ds = ds["test"].select(
+        list(range(min(CONFIG["num_eval_samples"], len(ds["test"]))))
+    )
     print(f"[OK] Loaded {len(train_ds)} train, {len(test_ds)} test samples")
 except Exception as e:
-    print(f"[ERROR] Dataset error: {e}")
-    exit(1)
+    print(f"[ERROR] Dataset loading failed: {e}")
+    sys.exit(1)
 
 # ============================================================================
-# 2. LOAD MODEL (Phi-2 with fp16 + gradient checkpointing)
+# 2. LOAD TOKENIZER
 # ============================================================================
-print("\n[2/5] Loading Phi-2 model with fp16 + gradient checkpointing...")
+print("\n[2/6] Loading tokenizer...")
 try:
-    model_kwargs = {
-        "torch_dtype": torch.float16,
-        "device_map": "auto",
-        "trust_remote_code": True,
-        "attn_implementation": "sdpa",
-    }
-    
-    print("  -> Using SDPA (scaled dot-product attention, CUDA-native)")
-    
+    tokenizer = AutoTokenizer.from_pretrained(
+        CONFIG["model_name"], trust_remote_code=True, use_fast=True
+    )
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "right"
+    print(f"[OK] Tokenizer loaded")
+except Exception as e:
+    print(f"[ERROR] Tokenizer loading failed: {e}")
+    sys.exit(1)
+
+# ============================================================================
+# 3. LOAD MODEL
+# ============================================================================
+print("\n[3/6] Loading Phi-2 model...")
+try:
+    # Check CUDA availability
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"  -> Device: {device}")
+
+    if device == "cpu":
+        print("  [WARNING] CUDA not detected - training will be VERY slow")
+        print("  [WARNING] Check CUDA installation if GPU is available")
+
+    # Load model with SDPA attention and fp16
     model = AutoModelForCausalLM.from_pretrained(
         CONFIG["model_name"],
-        **model_kwargs
+        trust_remote_code=True,
+        torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+        attn_implementation="sdpa",
+        low_cpu_mem_usage=True,
     )
-    
-    # Enable gradient checkpointing to save VRAM
-    if hasattr(model, "gradient_checkpointing_enable"):
-        model.gradient_checkpointing_enable()
-    
-    tokenizer = AutoTokenizer.from_pretrained(CONFIG["model_name"], trust_remote_code=True)
-    tokenizer.pad_token = tokenizer.eos_token
-    print(f"[OK] Model loaded (fp16 + gradient checkpointing)")
+
+    # Move to GPU if available
+    if device == "cuda":
+        model = model.to(device)
+        print(f"  -> Model on GPU with SDPA attention (fp16)")
+    else:
+        print(f"  -> Model on CPU (fp32)")
+
+    # Enable gradient checkpointing
+    if hasattr(model, "enable_input_require_grads"):
+        model.enable_input_require_grads()
+    else:
+
+        def make_inputs_require_grad(module, input, output):
+            output.requires_grad_(True)
+
+        model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+
+    print(f"[OK] Model loaded on {device}")
 except Exception as e:
-    print(f"[ERROR] Model loading error: {e}")
-    exit(1)
+    print(f"[ERROR] Model loading failed: {e}")
+    import traceback
+
+    traceback.print_exc()
+    sys.exit(1)
 
 # ============================================================================
-# 3. CONFIGURE LORA
+# 4. CONFIGURE LORA
 # ============================================================================
-print("\n[3/5] Configuring LoRA adapters...")
+print("\n[4/6] Configuring LoRA...")
 try:
     lora_config = LoraConfig(
         r=CONFIG["lora_r"],
         lora_alpha=CONFIG["lora_alpha"],
-        target_modules=["q_proj", "v_proj"],
+        target_modules=["Wqkv", "fc1", "fc2"],  # Phi-2 specific modules
         lora_dropout=0.05,
         bias="none",
-        task_type="CAUSAL_LM",
+        task_type=TaskType.CAUSAL_LM,
     )
     model = get_peft_model(model, lora_config)
-    print(f"[OK] LoRA enabled (rank={CONFIG['lora_r']}, alpha={CONFIG['lora_alpha']})")
+    model.print_trainable_parameters()
+    print(f"[OK] LoRA configured (r={CONFIG['lora_r']}, alpha={CONFIG['lora_alpha']})")
 except Exception as e:
-    print(f"[ERROR] LoRA config error: {e}")
-    exit(1)
+    print(f"[ERROR] LoRA configuration failed: {e}")
+    import traceback
+
+    traceback.print_exc()
+    sys.exit(1)
 
 # ============================================================================
-# 4. PREPARE DATASET (pre-format to simple text)
+# 5. TOKENIZE DATASET
 # ============================================================================
-print("\n[4/5] Preparing dataset...")
+print("\n[5/6] Tokenizing dataset...")
 try:
-    def format_example(example):
-        text = f"Instruction: {example['instruction']}\n"
-        if example.get('input'):
-            text += f"Input: {example['input']}\n"
-        text += f"Response: {example['output']}"
-        return {"text": text}
-    
-    train_ds_formatted = train_ds.map(
-        format_example,
-        remove_columns=train_ds.column_names
+
+    def tokenize_function(examples):
+        # Format as instruction-response pairs
+        texts = []
+        for i in range(len(examples["instruction"])):
+            text = f"Instruction: {examples['instruction'][i]}\n"
+            if examples["input"][i]:
+                text += f"Input: {examples['input'][i]}\n"
+            text += f"Response: {examples['output'][i]}"
+            texts.append(text)
+
+        # Tokenize
+        result = tokenizer(
+            texts,
+            truncation=True,
+            max_length=CONFIG["max_seq_length"],
+            padding="max_length",
+            return_tensors=None,
+        )
+        result["labels"] = result["input_ids"].copy()
+        return result
+
+    # Tokenize datasets
+    train_dataset = train_ds.map(
+        tokenize_function,
+        batched=True,
+        remove_columns=train_ds.column_names,
+        desc="Tokenizing train",
     )
-    test_ds_formatted = test_ds.map(
-        format_example,
-        remove_columns=test_ds.column_names
+
+    eval_dataset = test_ds.map(
+        tokenize_function,
+        batched=True,
+        remove_columns=test_ds.column_names,
+        desc="Tokenizing eval",
     )
-    
-    # Verify dataset has 'text' column for SFTTrainer
-    if 'text' not in train_ds_formatted.column_names:
-        print(f"[ERROR] Dataset missing 'text' column. Columns: {train_ds_formatted.column_names}")
-        exit(1)
-    
-    print(f"[OK] Dataset formatted (400 train, 50 test)")
+
+    print(f"[OK] Tokenization complete")
 except Exception as e:
-    print(f"[ERROR] Dataset formatting error: {e}")
-    exit(1)
+    print(f"[ERROR] Tokenization failed: {e}")
+    import traceback
+
+    traceback.print_exc()
+    sys.exit(1)
 
 # ============================================================================
-# 5. TRAIN (aggressive batch sizes for speed)
+# 6. TRAIN
 # ============================================================================
-print("\n[5/5] Training...")
+print("\n[6/6] Training...")
 print("Configuration:")
-print(f"  Epochs: {CONFIG['num_epochs']}")
-print(f"  Batch size: {CONFIG['train_batch_size']} (per device)")
-print(f"  Eval batch: {CONFIG['eval_batch_size']} (per device)")
+print(
+    f"  Batch size: {CONFIG['train_batch_size']} × {CONFIG['gradient_accumulation_steps']} accumulation"
+)
+print(
+    f"  Effective batch: {CONFIG['train_batch_size'] * CONFIG['gradient_accumulation_steps']}"
+)
 print(f"  Max sequence: {CONFIG['max_seq_length']} tokens")
 print(f"  Learning rate: {CONFIG['learning_rate']}")
-print(f"  Samples: {CONFIG['num_train_samples']} training, {CONFIG['num_eval_samples']} evaluation")
-if FLASH_ATTN_AVAILABLE:
-    print("  Kernels: Flash Attention 2 (CUDA-optimized)")
-else:
-    print("  Kernels: SDPA/CUDA-native efficient attention")
+print(f"  Samples: {len(train_dataset)} train, {len(eval_dataset)} eval")
 
 try:
-    args = TrainingArguments(
+    print("\n[DEBUG] Creating TrainingArguments...")
+    sys.stdout.flush()
+
+    # Training arguments - Windows compatible
+    training_args = TrainingArguments(
         output_dir=CONFIG["output_dir"],
         num_train_epochs=CONFIG["num_epochs"],
         per_device_train_batch_size=CONFIG["train_batch_size"],
         per_device_eval_batch_size=CONFIG["eval_batch_size"],
-        gradient_accumulation_steps=4,
-        gradient_checkpointing=True,
+        gradient_accumulation_steps=CONFIG["gradient_accumulation_steps"],
         learning_rate=CONFIG["learning_rate"],
         warmup_steps=CONFIG["warmup_steps"],
         logging_steps=CONFIG["logging_steps"],
         save_steps=CONFIG["save_steps"],
-        eval_steps=CONFIG["eval_steps"],
         save_total_limit=2,
         report_to="none",
-        optim="adamw_torch",  # Standard torch optimizer, more reliable on Windows
+        logging_dir=f"{CONFIG['output_dir']}/logs",
+        optim="adamw_torch",
+        fp16=torch.cuda.is_available(),
+        bf16=False,
+        dataloader_pin_memory=False,
+        dataloader_persistent_workers=False,
+        gradient_checkpointing=False,
+        remove_unused_columns=False,
+        dataloader_num_workers=0,  # Critical for Windows - no multiprocessing
+        disable_tqdm=False,
+        logging_first_step=True,
+        dataloader_drop_last=False,
     )
-    
-    trainer = SFTTrainer(
+
+    print("[DEBUG] TrainingArguments created successfully")
+    sys.stdout.flush()
+
+    print("[DEBUG] Creating DataCollator...")
+    sys.stdout.flush()
+
+    # Data collator
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer,
+        mlm=False,
+    )
+
+    print("[DEBUG] DataCollator created successfully")
+    sys.stdout.flush()
+
+    print("[DEBUG] Creating Trainer (this may take a moment)...")
+    sys.stdout.flush()
+
+    # Create trainer
+    trainer = Trainer(
         model=model,
-        args=args,
-        train_dataset=train_ds_formatted,
-        eval_dataset=test_ds_formatted,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        data_collator=data_collator,
     )
-    
+
+    print("[DEBUG] Trainer created successfully")
+    sys.stdout.flush()
+
+    # Train
+    print("\n" + "=" * 70)
+    print("Starting training...")
+    print("=" * 70 + "\n")
+    sys.stdout.flush()
+
+    print("[DEBUG] Calling trainer.train()...")
+    sys.stdout.flush()
+
     train_start = time.time()
     result = trainer.train()
     train_duration = time.time() - train_start
+
+    print(f"[DEBUG] Training loop completed")
+    sys.stdout.flush()
     training_success = True
-    print(f"\n[OK] Training completed in {train_duration/60:.1f} minutes")
-    
+
+    print(f"\n[OK] Training completed in {train_duration / 60:.2f} minutes")
+    print(f"Final loss: {result.training_loss:.4f}")
+
+    # Evaluate
+    print("\n[DEBUG] Starting evaluation...")
+    sys.stdout.flush()
+    eval_result = trainer.evaluate()
+    print(f"Eval loss: {eval_result['eval_loss']:.4f}")
+    print(f"[DEBUG] Evaluation completed")
+    sys.stdout.flush()
+
 except Exception as e:
-    print(f"\n[ERROR] Training error: {e}")
+    print(f"\n[ERROR] Training failed: {e}")
     import traceback
+
     traceback.print_exc()
     training_success = False
-    exit(1)
+    sys.exit(1)
 
 # ============================================================================
-# 6. SAVE MODEL (only if training succeeded)
+# 7. SAVE MODEL
 # ============================================================================
 if training_success:
     print("\n[SAVE] Saving trained model...")
     try:
         model_path = Path(CONFIG["output_dir"]) / "final"
         model_path.mkdir(parents=True, exist_ok=True)
-        
+
+        # Save model and tokenizer
         trainer.save_model(str(model_path))
         tokenizer.save_pretrained(str(model_path))
-        
+
         print(f"[OK] Model saved to {model_path}")
-        print(f"[OK] LoRA adapters: {model_path / 'adapter_model.bin'}")
+        print(f"[OK] LoRA adapters saved")
     except Exception as e:
-        print(f"[ERROR] Save error: {e}")
-else:
-    print("\n⚠ Training did not complete successfully, model not saved")
+        print(f"[ERROR] Save failed: {e}")
+        import traceback
+
+        traceback.print_exc()
 
 # ============================================================================
-# 7. CLEANUP
+# 8. CLEANUP
 # ============================================================================
 print("\n[CLEANUP] Releasing GPU resources...")
 try:
-    # Explicitly delete large objects
-    if 'model' in locals():
+    if "model" in locals():
         del model
-    if 'trainer' in locals():
+    if "trainer" in locals():
         del trainer
-    if 'train_ds_formatted' in locals():
-        del train_ds_formatted
-    if 'test_ds_formatted' in locals():
-        del test_ds_formatted
-    
-    # Clear GPU memory
     torch.cuda.empty_cache()
     print("[OK] GPU memory cleared")
 except Exception as e:
@@ -246,13 +361,19 @@ except Exception as e:
 # ============================================================================
 total_time = time.time() - start_time
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("SEMANTIC GROUNDING CYCLE 1: COMPLETE")
-print("="*70)
-print(f"\nTraining Time: {train_duration/60:.2f} minutes")
-print(f"Total Time: {total_time/60:.2f} minutes")
-print(f"Model Path: models/grounding_cycle_1/final")
-print(f"\nData grounded from:")
-print(f"  • Research Corpus: 104 papers (corpus_index.json)")
-print(f"  • Semantic Grounding: 1 lived experience (lived_experience_log.json)")
-print(f"  • Training Dataset: 400 samples from articles")
+print("=" * 70)
+if training_success:
+    print(f"\nTraining Time: {train_duration / 60:.2f} minutes")
+    print(f"Total Time: {total_time / 60:.2f} minutes")
+    print(f"Model Path: {CONFIG['output_dir']}/final")
+    print(f"\nData grounded from:")
+    print(f"  • Research Corpus: 105 papers")
+    print(f"  • Training Dataset: {len(train_dataset)} samples")
+    print(f"\n✅ Training successful!")
+else:
+    print(f"\n❌ Training failed - see errors above")
+    print(f"Total Time: {total_time / 60:.2f} minutes")
+
+print("\n" + "=" * 70)
