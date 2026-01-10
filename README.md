@@ -2,9 +2,9 @@
 
 **Semantic Grounding Framework for Fine-Tuning Language Models**
 
-Examiner is an open-source framework for building **semantic grounding systems** that align language models with domain-specific knowledge. **You bring your corpus, expertise, and knowledge**—Examiner provides the framework to integrate them.
+Examiner is an open-source framework for **semantic grounding**: integrating human-validated expert knowledge into language models to establish meaning through recursive structural relationships. **You bring your corpus and expertise**—Examiner automates the framework to extract, structure, and inject domain knowledge into AI systems.
 
-Build grounded AI systems for any domain: medical diagnosis, legal analysis, scientific research, or specialized expertise. Fine-tune language models on your knowledge base, ensuring responses are anchored in authoritative sources with verifiable citations.
+Build semantically grounded AI for any domain: medical diagnosis, legal analysis, scientific research, or specialized expertise. Your lived experience and knowledge become the foundation for model understanding.
 
 ## 🎯 What is Semantic Grounding?
 
@@ -42,7 +42,7 @@ python pdf_to_dataset.py \
 
 **For corpus composition examples, see [EXAMPLE_CORPUS_SOURCES.md](EXAMPLE_CORPUS_SOURCES.md)**
 
-### 3. Capture Expert Knowledge (Optional)
+### 3. Capture Expert Knowledge (Recommended)
 
 ```bash
 python lived_experience_dialogue.py \
@@ -100,12 +100,12 @@ python inference.py \
 
 ## 📚 Building Your Corpus
 
-**What is a corpus?** A collection of authoritative documents in your domain:
-- Research papers or academic publications
-- Technical documentation and manuals  
-- Industry reports and standards
-- Domain expertise texts
-- Trusted reference material
+**What is a corpus?** The structural foundation for semantic grounding—documents that encode domain-specific patterns, relationships, and knowledge structures:
+- Research papers that establish recursive relationships and theoretical frameworks
+- Technical documentation that captures domain reasoning patterns
+- Industry standards that define structural constraints
+- Expert-curated materials that preserve domain context
+- Reference materials that maintain information fidelity across knowledge levels
 
 **Recommended sizes:**
 - **Small** (10-20 docs): 5-10 min training, basic quality
@@ -181,7 +181,7 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ## ❓ FAQ
 
 **Q: Do I need domain expertise to build a corpus?**  
-A: Not required, but helpful. Start with published papers and documents—domain experts improve quality.
+A: Yes—semantic grounding requires human validation. Domain experts ensure the corpus captures recursive structural relationships and contextual meaning that models cannot infer from documents alone.
 
 **Q: How many documents do I need?**  
 A: Start with 20-30, aim for 50-100 for good results.
