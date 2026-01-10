@@ -112,22 +112,14 @@ python inference.py \
 - **Medium** (50-100 docs): 20-60 min training, good quality
 - **Large** (100+ docs): 1-4 hours training, excellent quality
 
-**Finding papers:**
-- arXiv: https://arxiv.org/search/
-- Google Scholar: https://scholar.google.com/
-- Connected Papers: https://www.connectedpapers.com/
-- Papers with Code: https://paperswithcode.com/
-- Your institution's library (with access)
-
-See [EXAMPLE_CORPUS_SOURCES.md](EXAMPLE_CORPUS_SOURCES.md) for detailed examples of corpus composition and sources.
+See [EXAMPLE_CORPUS_SOURCES.md](EXAMPLE_CORPUS_SOURCES.md) for detailed examples of corpus composition and recommended sources for papers.
 
 ## 📖 Documentation
 
 - **[Corpus Setup Guide](CORPUS_SETUP.md)** - How to build your corpus (READ FIRST!)
 - **[Example Corpus Sources](EXAMPLE_CORPUS_SOURCES.md)** - Example composition and where to find papers
-- **[Quick Start](QUICK_START.md)** - Step-by-step setup
-- **[Training Guide](TRAINING_CONSOLIDATED.md)** - Fine-tuning details
-- **[System Architecture](SYSTEM_SUMMARY.md)** - Technical overview
+- **[Local Data Protection](LOCAL_DATA_PROTECTION.md)** - Keep your data safe and private
+- **[Contributing](CONTRIBUTING.md)** - Contribution guidelines for the project
 
 ## 📊 Test Results
 
@@ -157,9 +149,8 @@ python verify_system.py
 ### Verify Installation
 
 ```bash
-python check_gpu.py        # Check GPU setup
 python verify_system.py    # Verify all components
-python architecture_auditor.py  # System audit
+python architecture_auditor.py  # System audit and health checks
 ```
 
 ## 📦 Dependencies
