@@ -1,0 +1,29 @@
+{
+  "training_run": "semantic_grounding_cycle_1",
+  "timestamp": "2026-01-10T10:49:31.715517",
+  "data_files": [
+    {
+      "source": "corpus_index.json",
+      "type": "research_corpus",
+      "description": "17 research papers on AI, semantics, grounding, consciousness",
+      "integration": "Extract research patterns for improvement proposals"
+    },
+    {
+      "source": "lived_experience_log.json",
+      "type": "semantic_grounding",
+      "description": "1 lived experience report(s) from user",
+      "integration": "Learn user's ground truth; use as C_eff"
+    },
+    {
+      "source": "training_data_cycle_1.json",
+      "type": "unified_training_data",
+      "description": "Corpus + grounding combined for training",
+      "integration": "Pass to fine-tuning pipeline"
+    }
+  ],
+  "next_steps": [
+    "python qwen_finetune.py --training-data training_data_cycle_1.json",
+    "Monitor training with: python monitor_training.py",
+    "After training, verify: python verify_system.py"
+  ]
+}
