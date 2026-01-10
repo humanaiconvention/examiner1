@@ -1,0 +1,12 @@
+transformers
+peft
+datasets
+bitsandbytes
+accelerate
+trl
+PyMuPDF
+tqdm
+scipy
+sentencepiece
+protobuf
+unsloth
