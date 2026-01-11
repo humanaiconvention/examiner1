@@ -1,0 +1,29 @@
+[
+  {
+    "task": "gsm8k",
+    "question": "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for  per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+    "model_answer": "6",
+    "correct_answer": "8",
+    "reasoning_trace": "Janet gets 16 eggs per day. She eats 3 and uses 4 for muffins, so she uses 7 eggs. That leaves 16 - 7 = 9 eggs. Wait, let me recalculate: she has 16 eggs, uses 3 + 4 = 7, so 16 - 7 = 9. She sells them for  each, so 9 \u00d7  = 8... Actually I calculated 6 somehow.",
+    "context": "Word problem with arithmetic operations",
+    "timestamp": "2025-01-10T19:00:00"
+  },
+  {
+    "task": "gsm8k",
+    "question": "A store sells apples for  per pound and oranges for  per pound. If you buy 4 pounds of apples and 5 pounds of oranges, how much do you spend in total?",
+    "model_answer": "3",
+    "correct_answer": "2",
+    "reasoning_trace": "Apples cost  per pound, and I'm buying 4 pounds, so that's 3 \u00d7 4 = 2. Oranges cost  per pound, and I'm buying 5 pounds, so that's 2 \u00d7 5 = 0. Total is 2 + 0 = 2. But I answered 3 which is incorrect.",
+    "context": "Basic multiplication and addition",
+    "timestamp": "2025-01-10T19:01:00"
+  },
+  {
+    "task": "gsm8k",
+    "question": "If a rectangle has a length of 8 meters and a width of 5 meters, what is its perimeter?",
+    "model_answer": "40 meters",
+    "correct_answer": "26 meters",
+    "reasoning_trace": "Perimeter of a rectangle is 2 \u00d7 (length + width). So it's 2 \u00d7 (8 + 5) = 2 \u00d7 13 = 26 meters. I incorrectly calculated 8 \u00d7 5 = 40, confusing perimeter with area.",
+    "context": "Geometry - rectangle perimeter formula",
+    "timestamp": "2025-01-10T19:02:00"
+  }
+]

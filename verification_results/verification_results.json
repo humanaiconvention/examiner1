@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-01-10T21:35:39.917786",
+  "total_samples": 3,
+  "verified": 0,
+  "errors": 3,
+  "results": [
+    {
+      "status": "error",
+      "error": "Cannot connect to host api.aristotle.ai:443 ssl:default [Name or service not known]",
+      "question": "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for  per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+      "reasoning": "Janet gets 16 eggs per day. She eats 3 and uses 4 for muffins, so she uses 7 eggs. That leaves 16 - 7 = 9 eggs. Wait, let me recalculate: she has 16 eggs, uses 3 + 4 = 7, so 16 - 7 = 9. She sells them for  each, so 9 \u00d7  = 8... Actually I calculated 6 somehow."
+    },
+    {
+      "status": "error",
+      "error": "Cannot connect to host api.aristotle.ai:443 ssl:default [Name or service not known]",
+      "question": "A store sells apples for  per pound and oranges for  per pound. If you buy 4 pounds of apples and 5 pounds of oranges, how much do you spend in total?",
+      "reasoning": "Apples cost  per pound, and I'm buying 4 pounds, so that's 3 \u00d7 4 = 2. Oranges cost  per pound, and I'm buying 5 pounds, so that's 2 \u00d7 5 = 0. Total is 2 + 0 = 2. But I answered 3 which is incorrect."
+    },
+    {
+      "status": "error",
+      "error": "Cannot connect to host api.aristotle.ai:443 ssl:default [Name or service not known]",
+      "question": "If a rectangle has a length of 8 meters and a width of 5 meters, what is its perimeter?",
+      "reasoning": "Perimeter of a rectangle is 2 \u00d7 (length + width). So it's 2 \u00d7 (8 + 5) = 2 \u00d7 13 = 26 meters. I incorrectly calculated 8 \u00d7 5 = 40, confusing perimeter with area."
+    }
+  ]
+}
