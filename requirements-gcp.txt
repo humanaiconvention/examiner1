@@ -1,0 +1,31 @@
+# GCP GPU Instance Requirements
+# Optimized for NVIDIA T4/V100 GPUs with CUDA 12.1 support
+# Use with: pip install -r requirements-gcp.txt
+
+# Core ML Dependencies
+torch>=2.0.0
+transformers>=4.35.0
+peft>=0.7.0
+datasets>=2.14.0
+bitsandbytes>=0.41.0
+accelerate>=0.24.0
+trl>=0.7.0
+
+# Data Processing
+PyMuPDF>=1.23.0
+tqdm>=4.66.0
+scipy>=1.11.0
+sentencepiece>=0.1.99
+protobuf>=4.24.0
+
+# Aristotle Verifier Specific
+aiohttp>=3.9.0
+requests>=2.31.0
+
+# Optional but Recommended
+unsloth
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Evaluation (if needed)
+lm-eval>=0.4.0
