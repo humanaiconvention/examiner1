@@ -1,1 +1,0 @@
-# Examiner1 - First Training Test\n\n**Date**: 2026-01-10\n**Corpus**: 105 PDFs from D:\articles\n**Status**: Setup complete, ready to train\n\n## Files\n- corpus_index.json: Corpus metadata\n- lived_experience_log.json: Semantic grounding\n- training_manifest.json: Training configuration
