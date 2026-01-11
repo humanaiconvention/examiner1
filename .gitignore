@@ -32,6 +32,7 @@ ENV/
 # IDE
 .vscode/
 .idea/
+.zed/
 *.swp
 *.swo
 *~
@@ -46,6 +47,7 @@ models/checkpoints/
 models/final/
 models/**/*.pt
 models/**/*.pth
+Examiner1/models/
 logs/
 runs/
 wandb/
@@ -65,7 +67,11 @@ extracted_text/
 
 # User-specific files (DO NOT COMMIT)
 lived_experience_log.json
+Examiner1/lived_experience_log.json
+Examiner1/corpus_index.json
+Examiner1/training_manifest.json
 training_data*.json
+training_data_cycle_*.json
 user_corpus.json
 
 # Training artifacts
@@ -73,6 +79,10 @@ unsloth_compiled_cache/
 training_data_*.json
 *.qlora
 *.lora
+capture_grounding.py
+add_grounding.py
+test_dataloader.py
+examiner_clean/
 
 # OS
 .DS_Store

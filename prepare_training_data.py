@@ -10,39 +10,39 @@ This script:
 """
 
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
-print("="*70)
+print("=" * 70)
 print("TRAINING DATA PREPARATION")
-print("="*70)
+print("=" * 70)
 
 # Load semantic grounding
 print("\n[1/3] Loading semantic grounding data...")
-with open('lived_experience_log.json', 'r') as f:
+with open("Examiner1/lived_experience_log.json", "r") as f:
     grounding_data = json.load(f)
 
-grounding_count = len(grounding_data.get('reports', []))
+grounding_count = len(grounding_data.get("reports", []))
 print(f"✓ Loaded {grounding_count} lived experience(s)")
 
 if grounding_count > 0:
-    exp = grounding_data['reports'][0]
+    exp = grounding_data["reports"][0]
     print(f"  └─ Type: {exp['experience_type']}")
     print(f"  └─ Confidence: {exp['confidence_in_this_learning']:.1%}")
     print(f"  └─ Model Learning: '{exp['what_this_teaches'][:60]}...'")
 
 # Load corpus
 print("\n[2/3] Loading research corpus...")
-with open('corpus_index.json', 'r') as f:
+with open("Examiner1/corpus_index.json", "r") as f:
     corpus_data = json.load(f)
 
-corpus_count = len(corpus_data.get('documents', []))
+corpus_count = len(corpus_data.get("documents", []))
 print(f"✓ Loaded {corpus_count} research papers")
 
 # Count by category
 categories = {}
-for doc in corpus_data.get('documents', []):
-    cat = doc.get('category', 'uncategorized')
+for doc in corpus_data.get("documents", []):
+    cat = doc.get("category", "uncategorized")
     categories[cat] = categories.get(cat, 0) + 1
 
 print("\n  Research corpus by category:")
@@ -61,55 +61,59 @@ training_data = {
             "count": corpus_count,
             "papers": [
                 {
-                    "title": doc.get('filename', doc.get('filepath', 'Unknown')),
-                    "category": doc.get('category', 'uncategorized'),
-                    "status": doc.get('status', 'indexed')
+                    "title": doc.get("filename", doc.get("filepath", "Unknown")),
+                    "category": doc.get("category", "uncategorized"),
+                    "status": doc.get("status", "indexed"),
                 }
-                for doc in corpus_data.get('documents', [])
-            ]
+                for doc in corpus_data.get("documents", [])
+            ],
         },
         "semantic_grounding": {
-            "source": "lived_experience_log.json",
+            "source": "Examiner1/lived_experience_log.json",
             "count": grounding_count,
             "experiences": [
                 {
-                    "type": exp['experience_type'],
-                    "learned_belief": exp['what_this_teaches'],
-                    "evidence": exp['lived_experience_basis'],
-                    "confidence": exp['confidence_in_this_learning'],
-                    "previous_belief": exp.get('contradicts_prior_belief', 'Model-generated'),
-                    "timestamp": exp['timestamp']
+                    "type": exp["experience_type"],
+                    "learned_belief": exp["what_this_teaches"],
+                    "evidence": exp["lived_experience_basis"],
+                    "confidence": exp["confidence_in_this_learning"],
+                    "previous_belief": exp.get(
+                        "contradicts_prior_belief", "Model-generated"
+                    ),
+                    "timestamp": exp["timestamp"],
                 }
-                for exp in grounding_data.get('reports', [])
-            ]
-        }
+                for exp in grounding_data.get("reports", [])
+            ],
+        },
     },
     "training_instructions": {
         "corpus_instructions": [
-            "Analyze patterns and improvements from {0} research papers".format(corpus_count),
+            "Analyze patterns and improvements from {0} research papers".format(
+                corpus_count
+            ),
             "Extract methodologies and best practices",
             "Learn from model collapse, semantic grounding, and AI safety literature",
-            "Update proposals based on comprehensive research foundation"
+            "Update proposals based on comprehensive research foundation",
         ],
         "grounding_instructions": [
             "Learn user's lived experiences as ground truth",
             "Update your understanding of what information integration means",
             "Recognize that meaning = information integration",
             "Accept user's observations as external validation",
-            "Use this grounding to prevent semantic collapse"
-        ]
+            "Use this grounding to prevent semantic collapse",
+        ],
     },
     "viability_check": {
         "C_eff_source": "lived_experience (user grounding)",
         "E_t_source": "research_corpus (drift tendency from 104 papers)",
         "requirement": "C_eff(t) >= E(t) for system viability",
-        "check_after_training": "Run verify_system.py to measure C_eff"
-    }
+        "check_after_training": "Run verify_system.py to measure C_eff",
+    },
 }
 
 # Save unified training dataset
 training_file = "training_data_cycle_1.json"
-with open(training_file, 'w') as f:
+with open(training_file, "w") as f:
     json.dump(training_data, f, indent=2)
 
 print(f"✓ Unified training dataset created: {training_file}")
@@ -120,40 +124,40 @@ manifest = {
     "timestamp": datetime.now().isoformat(),
     "data_files": [
         {
-            "source": "corpus_index.json",
+            "source": "Examiner1/corpus_index.json",
             "type": "research_corpus",
             "description": f"{corpus_count} research papers on AI, semantics, grounding, consciousness",
-            "integration": "Extract research patterns for improvement proposals"
+            "integration": "Extract research patterns for improvement proposals",
         },
         {
-            "source": "lived_experience_log.json",
+            "source": "Examiner1/lived_experience_log.json",
             "type": "semantic_grounding",
             "description": f"{grounding_count} lived experience report(s) from user",
-            "integration": "Learn user's ground truth; use as C_eff"
+            "integration": "Learn user's ground truth; use as C_eff",
         },
         {
             "source": "training_data_cycle_1.json",
             "type": "unified_training_data",
             "description": "Corpus + grounding combined for training",
-            "integration": "Pass to fine-tuning pipeline"
-        }
+            "integration": "Pass to fine-tuning pipeline",
+        },
     ],
     "next_steps": [
         "python qwen_finetune.py --training-data training_data_cycle_1.json",
         "Monitor training with: python monitor_training.py",
-        "After training, verify: python verify_system.py"
-    ]
+        "After training, verify: python verify_system.py",
+    ],
 }
 
 manifest_file = "training_manifest.json"
-with open(manifest_file, 'w') as f:
+with open(manifest_file, "w") as f:
     json.dump(manifest, f, indent=2)
 
 print(f"✓ Training manifest created: {manifest_file}")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("TRAINING DATA READY")
-print("="*70)
+print("=" * 70)
 print(f"\nData sources combined:")
 print(f"  • Research corpus: {corpus_count} papers")
 print(f"  • Semantic grounding: {grounding_count} lived experience(s)")
