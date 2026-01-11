@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "framework": "Examiner Semantic Grounding v1.0",
+    "created": "2026-01-10T10:50:00Z",
+    "corpus_location": "D:\\articles",
+    "total_documents": 105,
+    "total_samples": 4309,
+    "extraction_method": "pdf_to_dataset.py"
+  },
+  "documents": [
+    {
+      "filename": "02-pickering.pdf",
+      "category": "AI/ML Research",
+      "samples": 23,
+      "word_count": 5633
+    },
+    {
+      "filename": "0210005v2.pdf",
+      "category": "AI/ML Research",
+      "samples": 17,
+      "word_count": 5386
+    },
+    {
+      "filename": "12. Erwin Schrodinger - What is Life (1944).pdf",
+      "category": "Cognitive Science",
+      "samples": 50,
+      "word_count": 26372
+    },
+    {
+      "filename": "Ashby-Introduction-to-Cybernetics.pdf",
+      "category": "Cybernetics",
+      "samples": 50,
+      "word_count": 110070
+    },
+    {
+      "filename": "Attention+and+Effort+-+Kahneman.pdf",
+      "category": "Cognitive Science",
+      "samples": 50,
+      "word_count": 98237
+    },
+    {
+      "filename": "The Symbol Grounding Problem.pdf",
+      "category": "Cognitive Science",
+      "samples": 32,
+      "word_count": 8249
+    },
+    {
+      "filename": "language_models_are_unsupervised_multitask_learners.pdf",
+      "category": "AI/ML Research",
+      "samples": 50,
+      "word_count": 15376
+    },
+    {
+      "filename": "bareinboim-pearl-2016-causal-inference-and-the-data-fusion-problem.pdf",
+      "category": "Causal Inference",
+      "samples": 32,
+      "word_count": 9297
+    },
+    {
+      "filename": "Cybernetics-FromPasttoFuture.pdf",
+      "category": "Cybernetics",
+      "samples": 50,
+      "word_count": 36536
+    },
+    {
+      "filename": "entropy.pdf",
+      "category": "Information Theory",
+      "samples": 50,
+      "word_count": 28575
+    },
+    {
+      "filename": "The_interactivist_model.pdf",
+      "category": "Cognitive Science",
+      "samples": 50,
+      "word_count": 22796
+    },
+    {
+      "filename": "A_Review_on_Large_Language_Models_Architectures_Applications_Taxonomies_Open_Issues_and_Challenges.pdf",
+      "category": "AI/ML Research",
+      "samples": 50,
+      "word_count": 24903
+    },
+    {
+      "filename": "NeurIPS-2024-self-consuming-generative-models-with-curated-data-provably-optimize-human-preferences-Paper-Conference.pdf",
+      "category": "AI/ML Research",
+      "samples": 50,
+      "word_count": 17227
+    },
+    {
+      "filename": "A Tale of Tails_ Model Collapse as a Change of Scaling Laws.pdf",
+      "category": "AI/ML Research",
+      "samples": 3,
+      "word_count": 250
+    },
+    {
+      "filename": "AI-as-Normal-Technology-Narayanan-Kapoor-Final.pdf",
+      "category": "AI/ML Research",
+      "samples": 50,
+      "word_count": 20001
+    },
+    {
+      "filename": "Conant_Ashby Every Good Regulator of a system must be a model of that system.pdf",
+      "category": "Cybernetics",
+      "samples": 14,
+      "word_count": 4367
+    },
+    {
+      "filename": "Principles_of_Systems_and_Cybernetics_an_evolution.pdf",
+      "category": "Cybernetics",
+      "samples": 15,
+      "word_count": 4142
+    }
+  ],
+  "categories": {
+    "AI/ML Research": 65,
+    "Cognitive Science": 15,
+    "Cybernetics": 10,
+    "Information Theory": 8,
+    "Causal Inference": 7
+  },
+  "corpus_purpose": "Semantic grounding through integration of foundational cybernetics, cognitive science, modern AI/ML research, information theory, and systems theory to establish recursive structural relationships for language model fine-tuning"
+}
