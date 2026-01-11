@@ -252,9 +252,7 @@ https://paperswithcode.com/ (papers + implementations)
 
 ### Community Resources
 
-- **Reddit**: r/MachineLearning, r/LanguageModels
-- **Twitter/X**: #NLP, #LLMs, #AIResearch hashtags
-- **Subreddits**: r/LanguageTechnology, r/ArtificialIntelligence
+- **Reddit**: r/MachineLearning, r/LanguageModels, r/complexsystems
 - **Forums**: LessWrong, AI Alignment Forum
 
 ---
