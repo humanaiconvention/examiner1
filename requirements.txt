@@ -10,3 +10,7 @@ scipy
 sentencepiece
 protobuf
 unsloth
+lm-eval>=0.4.0
+requests
+aiohttp
+asyncio
