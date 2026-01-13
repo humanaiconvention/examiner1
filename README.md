@@ -53,13 +53,19 @@ python pdf_to_dataset.py \
 
 **For corpus composition examples, see [EXAMPLE_CORPUS_SOURCES.md](EXAMPLE_CORPUS_SOURCES.md)**
 
-### 3. Capture Expert Knowledge (Recommended)
+### 3. Capture Expert Knowledge (Semantic Grounding)
+This is the core of the Examiner framework. To prevent "model collapse" (semantic drift), the model needs **orthogonal input** from lived human experience that cannot be generated from its own training data.
+
+Run the interactive dialogue system to ground the model:
 
 ```bash
-python lived_experience_dialogue.py \
-  --output lived_experience_log.json \
-  --interactive
+python lived_experience_dialogue.py --interactive
 ```
+
+This will:
+1.  Ask you about real-world observations (successes, failures, limitations)
+2.  Generate a `lived_experience_log.json` file (excluded from git for privacy)
+3.  Force the model to acknowledge and integrate this **Ground Truth**
 
 ### 4. Generate Training Data
 

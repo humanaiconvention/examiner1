@@ -14,8 +14,20 @@ from datetime import datetime
 from pathlib import Path
 
 print("=" * 70)
-print("TRAINING DATA PREPARATION")
-print("=" * 70)
+
+# Prompt for Lived Experience
+print("\n[Semantic Grounding Check]")
+choice = input("Do you want to run the Lived Experience Dialogue to capture new grounding? [y/N]: ").strip().lower()
+if choice == 'y':
+    try:
+        print("\nLaunching dialogue system...")
+        import subprocess
+        import sys
+        subprocess.run([sys.executable, "lived_experience_dialogue.py"], check=True)
+        print("\n✓ Dialogue complete.")
+    except Exception as e:
+        print(f"Error running dialogue: {e}")
+        print("Continuing with existing logs...")
 
 # Load semantic grounding
 print("\n[1/3] Loading semantic grounding data...")

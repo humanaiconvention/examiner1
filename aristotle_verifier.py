@@ -23,7 +23,7 @@ class AristotleVerifier:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        api_base: str = "https://api.aristotle.ai/v1",
+        api_base: str = "https://aristotle.harmonic.fun/v1",
         timeout: int = 300,
     ):
         """
@@ -318,7 +318,7 @@ def main():
     parser.add_argument(
         "--api-base",
         type=str,
-        default="https://api.aristotle.ai/v1",
+        default="https://aristotle.harmonic.fun/v1",
         help="Aristotle API base URL",
     )
     parser.add_argument(

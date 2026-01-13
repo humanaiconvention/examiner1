@@ -1,0 +1,47 @@
+C:\Users\benja\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\triton\windows_utils.py:404: UserWarning: Failed to find CUDA.
+  warnings.warn("Failed to find CUDA.")
+Skipping import of cpp extensions due to incompatible torch version 2.7.1+cu118 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+W0110 11:52:56.934000 26008 torch\distributed\elastic\multiprocessing\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs.
+`torch_dtype` is deprecated! Use `dtype` instead!
+======================================================================
+SEMANTIC GROUNDING CYCLE 1: WINDOWS-COMPATIBLE TRAINING
+======================================================================
+
+[1/6] Loading dataset...
+[OK] Loaded 100 train, 25 test samples
+
+[2/6] Loading tokenizer...
+[OK] Tokenizer loaded
+
+[3/6] Loading Phi-2 model...
+  -> Device: cuda
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|##########| 2/2 [00:00<00:00, 21.98it/s]
+D:\humanaiconvention\examiner\train_consolidated.py:163: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+  -> Model on cuda with SDPA attention
+[OK] Model loaded on cuda
+
+[4/6] Configuring LoRA...
+trainable params: 6,553,600 || all params: 2,786,237,440 || trainable%: 0.2352
+[OK] LoRA configured (r=8, alpha=16)
+
+[TEST] Testing model forward pass...
+[OK] Model test passed (loss: 13.3302)
+
+[5/6] Tokenizing dataset...
+[OK] Tokenization complete
+
+[6/6] Training...
+Configuration:
+  Batch size: 1 × 4 accumulation
+  Effective batch: 4
+  Max sequence: 512 tokens
+  Learning rate: 0.0002
+  Samples: 100 train, 25 eval
+
+======================================================================
+Starting training...
+======================================================================
+
+[DEBUG] Warming up dataloader...
+[DEBUG] First batch loaded successfully

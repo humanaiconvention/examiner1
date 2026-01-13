@@ -1,109 +1,24 @@
-# Python
+
+# Exclude Python cache
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+*.pyc
 
-# Virtual environments
-venv/
-.venv
-env/
-ENV/
+# Exclude large models
+models/
+*.safetensors
+*.pt
+*.bin
 
-# IDE
-.vscode/
-.idea/
-.zed/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# ML/Training (keep empty model/ directory structure only)
-models/checkpoints/
-models/final/
-models/**/*.pt
-models/**/*.pth
-Examiner1/models/
-logs/
-runs/
-wandb/
-lightning_logs/
-
-# Data (user corpus - add your own, don't commit to repo)
-data/pdfs/
-data/raw/
-data/processed/
-data/datasets/
-corpus_index.json
-corpus_metadata.json
-extracted_text/
-*.csv
-*.json.bak
-*.parquet
-
-# User-specific files (DO NOT COMMIT)
+# Exclude personal grounding logs (Privacy)
 lived_experience_log.json
-Examiner1/lived_experience_log.json
-Examiner1/corpus_index.json
-Examiner1/training_manifest.json
-training_data*.json
+lived_experience_history.json
 training_data_cycle_*.json
-user_corpus.json
 
-# Training artifacts
-unsloth_compiled_cache/
-training_data_*.json
-*.qlora
-*.lora
-capture_grounding.py
-add_grounding.py
-test_dataloader.py
-examiner_clean/
+# Exclude deployment packages
+examiner_v*_gcp_deploy/
 
-# OS
-.DS_Store
-Thumbs.db
-*.swp
-
-# Temp files
-*.tmp
-*.temp
-*.bak
-*.log
-
-# pip
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Docker
-.dockerignore
-docker-compose.override.yml
-
-# Environment variables
-.env
-.env.local
-.env.*.local
+# Exclude data
+data/
+corpus/
+logs/
+1-11-26 test run 1/
