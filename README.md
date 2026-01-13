@@ -4,8 +4,6 @@
 
 Examiner is an open-source framework for **semantic grounding**: integrating human-validated expert knowledge into language models to establish meaning through recursive structural relationships. **You bring your corpus and expertise**—Examiner automates the framework to extract, structure, and inject domain knowledge into AI systems.
 
-Build semantically grounded AI for any domain: medical diagnosis, legal analysis, scientific research, or specialized expertise. Your lived experience and knowledge become the foundation for model understanding.
-
 **Now with QLoRA support** - Train 4B-8B parameter models on consumer GPUs (8GB VRAM).
 
 > 🏆 **Performance Highlight:** Achieved **78% on MMLU-Pro (Math)** benchmarks. This demonstrates that Examiner's semantic grounding framework preserves and potentially enhances high-level reasoning capabilities while injecting domain-specific "lived experience"—avoiding the catastrophic forgetting often seen in standard fine-tuning.
