@@ -1,4 +1,4 @@
-transformers>=4.46.0
+transformers
 peft
 datasets
 bitsandbytes

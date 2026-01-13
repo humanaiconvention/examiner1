@@ -140,20 +140,6 @@ python inference.py \
 - **Semantic Grounding**: Integrates lived experience + research corpus
 - **Windows/Linux Compatible**: Cross-platform support
 
-## 📱 Examiner-LFM (Lite) for Edge
-**Target**: `liquidai/lfm-2.5-1.2b-instruct` (1.2B Parameters)
-
-For edge deployment or low-VRAM environments (<4GB), use the specialized Lite pipeline:
-
-```bash
-# Optimized for 1.2B Liquid Foundation Model
-python train_lfm.py
-```
-
-- **Architecture**: Hybrid (LIV + Attention)
-- **Size**: ~2.4 GB (4-bit)
-- **Speed**: Extreme throughput for CPU/Edge inference
-
 ## 🎯 Training Configuration
 
 Edit `train_consolidated.py` to customize:
