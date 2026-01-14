@@ -323,4 +323,4 @@ We are not building software versions. We are breeding models. The goal is to ag
 
 **Ready to build grounded AI for your domain?** Start with [CORPUS_SETUP.md](CORPUS_SETUP.md) 🚀
 
-*Made with ❤️ for semantic grounding in AI systems*
+*Made with ❤️ for semantic grounding in AI systems | HumanAI Convention*
