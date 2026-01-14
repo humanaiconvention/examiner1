@@ -323,4 +323,13 @@ We are not building software versions. We are breeding models. The goal is to ag
 
 **Ready to build grounded AI for your domain?** Start with [CORPUS_SETUP.md](CORPUS_SETUP.md) 🚀
 
+## 🤝 Acknowledgements
+
+This project stands on the shoulders of giants in the open-source AI community:
+
+*   **[Maxime Labonne (mlabonne)](https://huggingface.co/mlabonne)**: For the `Qwen3-4B-abliterated` model and extensive work on LLM fine-tuning techniques used here.
+*   **[Unsloth AI](https://github.com/unslothai/unsloth)**: For the 2x faster, memory-efficient QLoRA training infrastructure.
+*   **[Hugging Face](https://huggingface.co/)**: For the `transformers`, `peft`, and `trl` libraries that make this possible.
+*   **[DeepSeek](https://github.com/deepseek-ai)**: For pushing the boundaries of open-weight reasoning models.
+
 *Made with ❤️ for semantic grounding in AI systems | HumanAI Convention*
